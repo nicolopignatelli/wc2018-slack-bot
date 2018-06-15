@@ -1,0 +1,8 @@
+package: .
+import:
+- package: github.com/nlopes/slack
+  version: ~0.2.0
+- package: github.com/caarlos0/env
+  version: ~3.3.0
+- package: github.com/google/go-cmp
+  version: ~0.2.0

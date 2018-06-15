@@ -1,0 +1,8 @@
+version: '2'
+services:
+  app:
+    build: .
+    container_name: wc2018_app
+    restart: "no"
+    volumes:
+      - ".:/wc2018-slack-bot"

@@ -1,0 +1,12 @@
+hash: 52b38d9d6ca329d024ea2c74cc98030591eb670f14d75eaab0d62d5e2c09d2ac
+updated: 2018-06-15T12:55:34.749365939Z
+imports:
+- name: github.com/caarlos0/env
+  version: 1cddc31c48c56ecd700d873edb9fd5b6f5df922a
+- name: github.com/google/go-cmp
+  version: 3af367b6b30c263d47e8895973edcca9a49cf029
+- name: github.com/gorilla/websocket
+  version: 5ed622c449da6d44c3c8329331ff47a9e5844f71
+- name: github.com/nlopes/slack
+  version: 8ab4d0b364ef1e9af5d102531da20d5ec902b6c4
+testImports: []
