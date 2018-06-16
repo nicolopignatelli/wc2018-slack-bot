@@ -195,8 +195,7 @@ func (h UnrecognisedEvent) ToString() string {
 
 func eventToHighlight(e Event, m Match) Highlight {
 	switch e.TypeOfEvent {
-	case "goal":
-	case "goal-penalty":
+	case "goal", "goal-penalty":
 		return GoalWasScored{match: m, player: e.Player, time: e.Time}
 	case "yellow-card":
 		return YellowCardWasIssued{player: e.Player, time: e.Time}
