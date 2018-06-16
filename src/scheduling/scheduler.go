@@ -4,7 +4,7 @@ import (
 	"time"
 	"slack"
 	"wc2018"
-	"fmt"
+	"log"
 )
 
 const PollingDelayRatioAfterError = 1.
@@ -35,8 +35,7 @@ func (s Scheduler) Run() {
 		case <-time.After(pollingInterval):
 			currentMatch, err := s.matches.GetCurrent()
 			if err != nil {
-				whatWentWrong := fmt.Sprintf("Something went wrong. Like Italy out of the tournament.\nError: %s", err)
-				s.slackBot.Say(whatWentWrong)
+				log.Printf("Something went wrong. Like Italy out of the tournament.\nError: %s", err)
 				pollingInterval += time.Duration(pollingInterval.Seconds() * PollingDelayRatioAfterError) * time.Second
 				continue
 			}

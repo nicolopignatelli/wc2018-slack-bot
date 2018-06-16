@@ -26,7 +26,6 @@ func (ms Matches) GetCurrent() (Match, error) {
 	}
 	defer response.Body.Close()
 
-
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return Match{}, err
