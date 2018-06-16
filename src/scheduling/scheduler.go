@@ -4,7 +4,10 @@ import (
 	"time"
 	"slack"
 	"wc2018"
+	"fmt"
 )
+
+const PollingDelayRatioAfterError = 1.
 
 func NewScheduler(pi time.Duration, sb slack.Bot, m wc2018.Matches) Scheduler {
 	return Scheduler{
@@ -25,13 +28,16 @@ func (s Scheduler) Run() {
 
 	previousIntervalMatch := wc2018.Match{}
 	firstPollingInterval := true
+	pollingInterval := s.pollingInterval
 
 	for {
 		select {
-		case <-time.After(s.pollingInterval):
+		case <-time.After(pollingInterval):
 			currentMatch, err := s.matches.GetCurrent()
 			if err != nil {
-				s.slackBot.Say("Something went wrong. Like Italy out of the tournament.")
+				whatWentWrong := fmt.Sprintf("Something went wrong. Like Italy out of the tournament.\nError: %s", err)
+				s.slackBot.Say(whatWentWrong)
+				pollingInterval += time.Duration(pollingInterval.Seconds() * PollingDelayRatioAfterError) * time.Second
 				continue
 			}
 
@@ -47,6 +53,7 @@ func (s Scheduler) Run() {
 			}
 
 			previousIntervalMatch = currentMatch
+			pollingInterval = s.pollingInterval
 		}
 	}
 }
