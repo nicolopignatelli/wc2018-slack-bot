@@ -158,6 +158,17 @@ func (h GoalWasScored) ToString() string {
 		h.time, h.player, h.match.HomeTeam.Code, h.match.HomeTeam.Goals, h.match.AwayTeam.Goals, h.match.AwayTeam.Code)
 }
 
+type OwnGoalWasScored struct {
+	match Match
+	player string
+	time string
+}
+
+func (h OwnGoalWasScored) ToString() string {
+	return fmt.Sprintf("Lol! (%s) %s scored an own goal...\n%s %d - %d %s",
+		h.time, h.player, h.match.HomeTeam.Code, h.match.HomeTeam.Goals, h.match.AwayTeam.Goals, h.match.AwayTeam.Code)
+}
+
 type YellowCardWasIssued struct {
 	player string
 	time string
@@ -176,13 +187,22 @@ func (h RedCardWasIssued) ToString() string {
 	return fmt.Sprintf("Oh no! Red card for %s (%s). He's out.", h.player, h.time)
 }
 
-type SubstitutionWasMade struct {
+type PlayerEnteredAsSubstitution struct {
 	player string
 	time string
 }
 
-func (h SubstitutionWasMade) ToString() string {
+func (h PlayerEnteredAsSubstitution) ToString() string {
 	return fmt.Sprintf("It's the turn of %s (%s).", h.player, h.time)
+}
+
+type PlayerWasSubstituted struct {
+	player string
+	time string
+}
+
+func (h PlayerWasSubstituted) ToString() string {
+	return fmt.Sprintf("%s was substituted (%s).", h.player, h.time)
 }
 
 type UnrecognisedEvent struct {
@@ -197,12 +217,16 @@ func eventToHighlight(e Event, m Match) Highlight {
 	switch e.TypeOfEvent {
 	case "goal", "goal-penalty":
 		return GoalWasScored{match: m, player: e.Player, time: e.Time}
+	case "goal-own":
+		return OwnGoalWasScored{match: m, player: e.Player, time: e.Time}
 	case "yellow-card":
 		return YellowCardWasIssued{player: e.Player, time: e.Time}
 	case "red-card":
 		return RedCardWasIssued{player: e.Player, time: e.Time}
 	case "substitution-in":
-		return SubstitutionWasMade{player: e.Player, time: e.Time}
+		return PlayerEnteredAsSubstitution{player: e.Player, time: e.Time}
+	case "substitution-out":
+		return PlayerWasSubstituted{player: e.Player, time: e.Time}
 	}
 
 	return UnrecognisedEvent{e}
