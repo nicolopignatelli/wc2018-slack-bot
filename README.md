@@ -8,6 +8,7 @@ It will notify about the start and end of a match, yellow and red cards, half ti
 - Create a Slack bot in your account and note down the token
 - Invite the bot in your channel
 - Clone the repo
+- Run `make deps`. To download all the dependencies.
 - Run `make build`. An x64 executable is created in the bin/ directory.
   Adjust the target according to your runtime architecture.
 - Run the binary with the required env variables.
