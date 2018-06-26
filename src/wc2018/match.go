@@ -6,7 +6,10 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+type FifaId string
+
 type Match struct {
+	FifaId FifaId `json:"fifa_id"`
 	Status string `json:"status"`
 	Datetime time.Time `json:"datetime"`
 	Time string `json:"time"`

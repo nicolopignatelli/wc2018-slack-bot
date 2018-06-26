@@ -26,14 +26,14 @@ type Scheduler struct {
 func (s Scheduler) Run() {
 	s.slackBot.Say("Someone started me. I'll keep you posted about matches highlights.")
 
-	previousIntervalMatch := wc2018.Match{}
+	previousIntervalMatches := make(map[wc2018.FifaId]wc2018.Match)
 	firstPollingInterval := true
 	pollingInterval := s.pollingInterval
 
 	for {
 		select {
 		case <-time.After(pollingInterval):
-			currentMatch, err := s.matches.GetCurrent()
+			currentMatches, err := s.matches.GetCurrent()
 			if err != nil {
 				log.Printf("Something went wrong. Like Italy out of the tournament.\nError: %s", err)
 				pollingInterval += time.Duration(pollingInterval.Seconds() * PollingDelayRatioAfterError) * time.Second
@@ -42,16 +42,27 @@ func (s Scheduler) Run() {
 
 			if firstPollingInterval {
 				firstPollingInterval = false
-				s.slackBot.Say(currentMatch.Summary())
+				for _, cm := range currentMatches {
+					s.slackBot.Say(cm.Summary())
+				}
 			} else {
-				somethingHappened, highlights := currentMatch.WhatHappenedSince(previousIntervalMatch); if somethingHappened {
-					for _, h := range highlights {
-						s.slackBot.Say(h.ToString())
+				for _, cm := range currentMatches {
+					previousIntervalMatch, found := previousIntervalMatches[cm.FifaId]
+					if !found {
+						previousIntervalMatch = wc2018.Match{}
 					}
+
+					somethingHappened, highlights := cm.WhatHappenedSince(previousIntervalMatch)
+					if somethingHappened {
+						for _, h := range highlights {
+							s.slackBot.Say(h.ToString())
+						}
+					}
+
+					previousIntervalMatches[cm.FifaId] = cm
 				}
 			}
 
-			previousIntervalMatch = currentMatch
 			pollingInterval = s.pollingInterval
 		}
 	}
