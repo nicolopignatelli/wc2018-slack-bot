@@ -43,10 +43,6 @@ func (m Match) IsInProgress(startEndThreshold time.Duration) bool {
 }
 
 func (m Match) Summary() string {
-	if !m.IsInProgress(time.Second) {
-		return "No one is playing right now."
-	}
-
 	return fmt.Sprintf("%s is playing against %s.\n%s %d - %d %s\nTime: %s",
 		m.HomeTeam.Country, m.AwayTeam.Country, m.HomeTeam.Code, m.HomeTeam.Goals, m.AwayTeam.Goals, m.AwayTeam.Code, m.Time)
 }

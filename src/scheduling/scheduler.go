@@ -42,6 +42,11 @@ func (s Scheduler) Run() {
 
 			if firstPollingInterval {
 				firstPollingInterval = false
+
+				if len(currentMatches) == 0 {
+					s.slackBot.Say("No one is playing right now.")
+				}
+
 				for _, cm := range currentMatches {
 					s.slackBot.Say(cm.Summary())
 				}
