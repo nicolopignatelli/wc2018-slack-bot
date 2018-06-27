@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var NoCurrentMatch []Match
+var NoCurrentMatches []Match
 
 func NewMatches(c time.Duration) Matches {
 	return Matches{
@@ -38,7 +38,7 @@ func (ms Matches) GetCurrent() ([]Match, error) {
 		return []Match{}, err
 	}
 
-	var currentMatches = NoCurrentMatch
+	var currentMatches = NoCurrentMatches
 
 	for _, m := range matches {
 		if m.IsInProgress(ms.currentMatchThreshold) {

@@ -49,7 +49,7 @@ func (s Scheduler) Run() {
 				for _, cm := range currentMatches {
 					previousIntervalMatch, found := previousIntervalMatches[cm.FifaId]
 					if !found {
-						previousIntervalMatch = wc2018.Match{}
+						previousIntervalMatch = wc2018.NoMatchData
 					}
 
 					somethingHappened, highlights := cm.WhatHappenedSince(previousIntervalMatch)

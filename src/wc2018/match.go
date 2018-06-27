@@ -6,6 +6,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+var NoMatchData = Match{}
+
 type FifaId string
 
 type Match struct {
@@ -53,7 +55,7 @@ func (m Match) WhatHappenedSince(lastMatchData Match) (bool, Highlights) {
 	var highlights Highlights
 
 	// Match has started
-	if cmp.Equal(lastMatchData, NoCurrentMatch) && !cmp.Equal(m, NoCurrentMatch) {
+	if cmp.Equal(lastMatchData, NoMatchData) && !cmp.Equal(m, NoMatchData) {
 		highlights = append(highlights, MatchHasStarted{m})
 	}
 
@@ -77,8 +79,8 @@ func (m Match) WhatHappenedSince(lastMatchData Match) (bool, Highlights) {
 	}
 
 	// Match has ended
-	if (!cmp.Equal(lastMatchData, NoCurrentMatch) && lastMatchData.Status != "completed") &&
-	   (m.Status == "completed" || cmp.Equal(m, NoCurrentMatch)) {
+	if (!cmp.Equal(lastMatchData, NoMatchData) && lastMatchData.Status != "completed") &&
+	   (m.Status == "completed" || cmp.Equal(m, NoMatchData)) {
 		highlights = append(highlights, MatchHasEnded{lastMatchData})
 	}
 
