@@ -159,7 +159,7 @@ type GoalWasScored struct {
 }
 
 func (h GoalWasScored) ToString() string {
-	return fmt.Sprintf("GOOOOAL! (%s) %s scored.\n%s %d - %d %s",
+	return fmt.Sprintf("⚽ GOOOOAL! (%s) %s scored.\n%s %d - %d %s ⚽",
 		h.time, h.player, h.match.HomeTeam.Code, h.match.HomeTeam.Goals, h.match.AwayTeam.Goals, h.match.AwayTeam.Code)
 }
 
@@ -177,37 +177,41 @@ func (h OwnGoalWasScored) ToString() string {
 type YellowCardWasIssued struct {
 	player string
 	time string
+	match Match
 }
 
 func (h YellowCardWasIssued) ToString() string {
-	return fmt.Sprintf("Uh oh! Yellow card for %s (%s)", h.player, h.time)
+	return fmt.Sprintf("| %s - %s | Uh oh! Yellow card for %s (%s)", h.match.HomeTeam.Code, h.match.AwayTeam.Code, h.player, h.time)
 }
 
 type RedCardWasIssued struct {
 	player string
 	time string
+	match Match
 }
 
 func (h RedCardWasIssued) ToString() string {
-	return fmt.Sprintf("Oh no! Red card for %s (%s). He's out.", h.player, h.time)
+	return fmt.Sprintf("| %s - %s | Oh no! Red card for %s (%s). He's out.", h.match.HomeTeam.Code, h.match.AwayTeam.Code, h.player, h.time)
 }
 
 type PlayerEnteredAsSubstitution struct {
 	player string
 	time string
+	match Match
 }
 
 func (h PlayerEnteredAsSubstitution) ToString() string {
-	return fmt.Sprintf("It's the turn of %s (%s).", h.player, h.time)
+	return fmt.Sprintf("| %s - %s | It's the turn of %s (%s).", h.match.HomeTeam.Code, h.match.AwayTeam.Code, h.player, h.time)
 }
 
 type PlayerWasSubstituted struct {
 	player string
 	time string
+	match Match
 }
 
 func (h PlayerWasSubstituted) ToString() string {
-	return fmt.Sprintf("%s was substituted (%s).", h.player, h.time)
+	return fmt.Sprintf("| %s - %s | %s was substituted (%s).", h.match.HomeTeam.Code, h.match.AwayTeam.Code, h.player, h.time)
 }
 
 type UnrecognisedEvent struct {
@@ -225,13 +229,13 @@ func eventToHighlight(e Event, m Match) Highlight {
 	case "goal-own":
 		return OwnGoalWasScored{match: m, player: e.Player, time: e.Time}
 	case "yellow-card":
-		return YellowCardWasIssued{player: e.Player, time: e.Time}
-	case "red-card":
-		return RedCardWasIssued{player: e.Player, time: e.Time}
+		return YellowCardWasIssued{player: e.Player, time: e.Time, match: m}
+	case "red-card", "yellow-card-second":
+		return RedCardWasIssued{player: e.Player, time: e.Time, match: m}
 	case "substitution-in":
-		return PlayerEnteredAsSubstitution{player: e.Player, time: e.Time}
+		return PlayerEnteredAsSubstitution{player: e.Player, time: e.Time, match: m}
 	case "substitution-out":
-		return PlayerWasSubstituted{player: e.Player, time: e.Time}
+		return PlayerWasSubstituted{player: e.Player, time: e.Time, match: m}
 	}
 
 	return UnrecognisedEvent{e}
