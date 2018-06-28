@@ -51,23 +51,34 @@ func (s Scheduler) Run() {
 					s.slackBot.Say(cm.Summary())
 				}
 			} else {
-				for _, cm := range currentMatches {
-					previousIntervalMatch, found := previousIntervalMatches[cm.FifaId]
+				highlightFifaIds := make(map[wc2018.FifaId]bool)
+				for fifaId := range previousIntervalMatches {
+					highlightFifaIds[fifaId] = true
+				}
+				for fifaId := range currentMatches {
+					highlightFifaIds[fifaId] = true
+				}
+
+				for fifaId := range highlightFifaIds {
+					highlightMatch, found := currentMatches[fifaId]; if !found {
+						highlightMatch = wc2018.NoMatchData
+					}
+
+					previousIntervalMatch, found := previousIntervalMatches[fifaId]
 					if !found {
 						previousIntervalMatch = wc2018.NoMatchData
 					}
 
-					somethingHappened, highlights := cm.WhatHappenedSince(previousIntervalMatch)
+					somethingHappened, highlights := highlightMatch.WhatHappenedSince(previousIntervalMatch)
 					if somethingHappened {
 						for _, h := range highlights {
 							s.slackBot.Say(h.ToString())
 						}
 					}
-
-					previousIntervalMatches[cm.FifaId] = cm
 				}
 			}
 
+			previousIntervalMatches = currentMatches
 			pollingInterval = s.pollingInterval
 		}
 	}
