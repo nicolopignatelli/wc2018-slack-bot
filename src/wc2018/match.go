@@ -4,6 +4,8 @@ import (
 	"time"
 	"fmt"
 	"github.com/google/go-cmp/cmp"
+	"strings"
+	"strconv"
 )
 
 var NoMatchData = Match{}
@@ -20,6 +22,9 @@ type Match struct {
 	Winner string `json:"winner"`
 	HomeTeamEvents Events `json:"home_team_events"`
 	AwayTeamEvents Events `json:"away_team_events"`
+	HomeTeamStatistics Statistics `json:"home_team_statistics"`
+	AwayTeamStatistics Statistics `json:"away_team_statistics"`
+	Weather Weather `json:"weather"`
 }
 
 func (m Match) IsInProgress(startEndThreshold time.Duration) bool {
@@ -108,6 +113,44 @@ func (evs Events) Contains(e Event) bool {
 	return false
 }
 
+type Statistics struct {
+	StartingEleven Players `json:"starting_eleven"`
+}
+
+type Player struct {
+	Name string `json:"name"`
+	ShirtNumber int `json:"shirt_number"`
+	Captain bool `json:"captain"`
+}
+
+func (p Player) ToString() string {
+	s := strconv.Itoa(p.ShirtNumber) + " " + p.Name
+	if p.Captain {
+		s += " (C)"
+	}
+
+	return s
+}
+
+type Players []Player
+
+func (ps Players) ToString() string {
+	var psStrings []string
+	for _, p := range ps {
+		psStrings = append(psStrings, p.ToString())
+	}
+
+	return strings.Join(psStrings, ",")
+}
+
+type Weather struct {
+	Humidity string `json:"humidity"`
+	TempCelsius string `json:"temp_celsius"`
+	TempFarenheit string `json:"temp_farenheit"`
+	WindSpeed string `json:"wind_speed"`
+	Description string `json:"description"`
+}
+
 type Highlight interface {
 	ToString() string
 }
@@ -119,7 +162,16 @@ type MatchHasStarted struct {
 }
 
 func (h MatchHasStarted) ToString() string {
-	return fmt.Sprintf("%s - %s has started!", h.match.HomeTeam.Country, h.match.AwayTeam.Country)
+	return fmt.Sprintf(
+		"%s - %s has started!\n\n" +
+		"| Weather |\n%s, %s°C/%s°F, Wind %s, Humidity %s\n\n" +
+		"| Starting eleven %s |\n%s" +
+		"| Starting eleven %s |\n%s",
+		h.match.HomeTeam.Country, h.match.AwayTeam.Country,
+		h.match.Weather.Description, h.match.Weather.TempCelsius, h.match.Weather.TempFarenheit, h.match.Weather.WindSpeed, h.match.Weather.Humidity,
+		h.match.HomeTeam.Country, h.match.HomeTeamStatistics.StartingEleven.ToString(),
+		h.match.AwayTeam.Country, h.match.AwayTeamStatistics.StartingEleven.ToString(),
+	)
 }
 
 type MatchHasEnded struct {
