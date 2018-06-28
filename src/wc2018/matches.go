@@ -31,7 +31,7 @@ func (ms Matches) GetCurrent() (map[FifaId]Match, error) {
 		return map[FifaId]Match{}, err
 	}
 
-	var matches map[FifaId]Match
+	var matches []Match
 
 	err = json.Unmarshal(body, &matches)
 	if err != nil {
