@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var NoCurrentMatches map[FifaId]Match
+var NoCurrentMatches = make(map[FifaId]Match)
 
 func NewMatches(c time.Duration) Matches {
 	return Matches{
