@@ -167,16 +167,24 @@ type MatchHasStarted struct {
 }
 
 func (h MatchHasStarted) ToString() string {
-	return fmt.Sprintf(
-		"%s - %s has started!\n" +
-		"| Weather | %s, %s°C/%s°F, Wind %s, Humidity %s\n" +
-		"| Starting eleven %s | %s\n" +
-		"| Starting eleven %s | %s",
-		h.match.HomeTeam.Country, h.match.AwayTeam.Country,
-		h.match.Weather.Description, h.match.Weather.TempCelsius, h.match.Weather.TempFarenheit, h.match.Weather.WindSpeed, h.match.Weather.Humidity,
-		h.match.HomeTeam.Country, h.match.HomeTeamStatistics.StartingEleven.ToString(),
-		h.match.AwayTeam.Country, h.match.AwayTeamStatistics.StartingEleven.ToString(),
-	)
+	str := fmt.Sprintf("%s - %s has started!", h.match.HomeTeam.Country, h.match.AwayTeam.Country)
+
+	// sometimes weather is not available at the beginning of the match
+	if (!cmp.Equal(h.match.Weather, Weather{})) {
+		str += fmt.Sprintf("\n| Weather | %s, %s°C/%s°F, Wind %s, Humidity %s",
+			h.match.Weather.Description, h.match.Weather.TempCelsius, h.match.Weather.TempFarenheit, h.match.Weather.WindSpeed, h.match.Weather.Humidity,
+		)
+	}
+
+	// sometimes stats are not available at the beginning of the match
+	if (!cmp.Equal(h.match.HomeTeamStatistics, Statistics{}) && !cmp.Equal(h.match.HomeTeamStatistics, Statistics{})) {
+		str += fmt.Sprintf("\n| Starting eleven %s | %s\n| Starting eleven %s | %s",
+			h.match.HomeTeam.Country, h.match.HomeTeamStatistics.StartingEleven.ToString(),
+			h.match.AwayTeam.Country, h.match.AwayTeamStatistics.StartingEleven.ToString(),
+		)
+	}
+
+	return str
 }
 
 type MatchHasEnded struct {
