@@ -70,6 +70,12 @@ func (m Match) WhatHappenedSince(lastMatchData Match) (bool, Highlights) {
 		}
 	}
 
+	// Score changed
+	if lastMatchData.HomeTeam.Goals != m.HomeTeam.Goals ||
+		lastMatchData.AwayTeam.Goals != m.AwayTeam.Goals {
+		highlights = append(highlights, ScoreHasChanged{m})
+	}
+
 	// Half time events
 	if lastMatchData.Time != "half-time" && m.Time == "half-time" {
 		highlights = append(highlights, FirstHalfHasEnded{m})
@@ -199,15 +205,22 @@ func (h SecondHalfHasStarted) ToString() string {
 	return fmt.Sprintf("Second half of %s - %s has started!", h.match.HomeTeam.Country, h.match.AwayTeam.Country)
 }
 
-type GoalWasScored struct {
+type ScoreHasChanged struct {
 	match Match
+}
+
+func (h ScoreHasChanged) ToString() string {
+	return fmt.Sprintf("%s %d - %d %s",
+		h.match.HomeTeam.Code, h.match.HomeTeam.Goals, h.match.AwayTeam.Goals, h.match.AwayTeam.Code)
+}
+
+type GoalWasScored struct {
 	player string
 	time string
 }
 
 func (h GoalWasScored) ToString() string {
-	return fmt.Sprintf("⚽ GOOOOAL! (%s) %s scored.\n%s %d - %d %s ⚽",
-		h.time, h.player, h.match.HomeTeam.Code, h.match.HomeTeam.Goals, h.match.AwayTeam.Goals, h.match.AwayTeam.Code)
+	return fmt.Sprintf("⚽ GOOOOAL! (%s) %s scored. ⚽", h.time, h.player)
 }
 
 type OwnGoalWasScored struct {
@@ -272,7 +285,7 @@ func (h UnrecognisedEvent) ToString() string {
 func eventToHighlight(e Event, m Match) Highlight {
 	switch e.TypeOfEvent {
 	case "goal", "goal-penalty":
-		return GoalWasScored{match: m, player: e.Player, time: e.Time}
+		return GoalWasScored{player: e.Player, time: e.Time}
 	case "goal-own":
 		return OwnGoalWasScored{match: m, player: e.Player, time: e.Time}
 	case "yellow-card":
