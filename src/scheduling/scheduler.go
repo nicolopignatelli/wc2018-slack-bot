@@ -64,8 +64,7 @@ func (s Scheduler) Run() {
 						highlightMatch = wc2018.NoMatchData
 					}
 
-					previousIntervalMatch, found := previousIntervalMatches[fifaId]
-					if !found {
+					previousIntervalMatch, found := previousIntervalMatches[fifaId]; if !found {
 						previousIntervalMatch = wc2018.NoMatchData
 					}
 
@@ -78,7 +77,9 @@ func (s Scheduler) Run() {
 				}
 			}
 
-			previousIntervalMatches = currentMatches
+			previousIntervalMatches = make(map[wc2018.FifaId]wc2018.Match)
+			for k, v := range currentMatches { previousIntervalMatches[k] = v }
+
 			pollingInterval = s.pollingInterval
 		}
 	}

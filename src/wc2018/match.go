@@ -19,7 +19,6 @@ type Match struct {
 	Time string `json:"time"`
 	HomeTeam Team `json:"home_team"`
 	AwayTeam Team `json:"away_team"`
-	Winner string `json:"winner"`
 	HomeTeamEvents Events `json:"home_team_events"`
 	AwayTeamEvents Events `json:"away_team_events"`
 	HomeTeamStatistics Statistics `json:"home_team_statistics"`
@@ -163,10 +162,10 @@ type MatchHasStarted struct {
 
 func (h MatchHasStarted) ToString() string {
 	return fmt.Sprintf(
-		"%s - %s has started!\n\n" +
-		"| Weather |\n%s, %s°C/%s°F, Wind %s, Humidity %s\n\n" +
-		"| Starting eleven %s |\n%s" +
-		"| Starting eleven %s |\n%s",
+		"%s - %s has started!\n" +
+		"| Weather | %s, %s°C/%s°F, Wind %s, Humidity %s\n" +
+		"| Starting eleven %s | %s\n" +
+		"| Starting eleven %s | %s",
 		h.match.HomeTeam.Country, h.match.AwayTeam.Country,
 		h.match.Weather.Description, h.match.Weather.TempCelsius, h.match.Weather.TempFarenheit, h.match.Weather.WindSpeed, h.match.Weather.Humidity,
 		h.match.HomeTeam.Country, h.match.HomeTeamStatistics.StartingEleven.ToString(),
